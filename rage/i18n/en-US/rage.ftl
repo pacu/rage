@@ -73,6 +73,9 @@ err-failed-to-open-output = Failed to open output: {$err}
 err-failed-to-write-output = Failed to write to output: {$err}
 err-passphrase-timed-out = Timed out waiting for passphrase input.
 
+err-missing-plugin = Could not find '{$name}' on the PATH.
+rec-missing-plugin = Have you installed the plugin?
+
 err-ux-A = Did {-rage} not do what you expected? Could an error be more useful?
 err-ux-B = Tell us
 # Put (len(A) - len(B) - 32) spaces here.

@@ -15,11 +15,13 @@ macro_rules! wlnfl {
 }
 
 pub(crate) enum EncryptError {
+    Age(age::EncryptError),
     BrokenPipe { is_stdout: bool, source: io::Error },
     IdentityFlag,
     InvalidRecipient(String),
     Io(io::Error),
     Minreq(minreq::Error),
+    MissingPlugin(String),
     MissingRecipients,
     MixedRecipientAndPassphrase,
     PassphraseTimedOut,
@@ -31,6 +33,7 @@ impl From<age::EncryptError> for EncryptError {
     fn from(e: age::EncryptError) -> Self {
         match e {
             age::EncryptError::Io(e) => EncryptError::Io(e),
+            _ => EncryptError::Age(e),
         }
     }
 }
@@ -50,6 +53,7 @@ impl From<minreq::Error> for EncryptError {
 impl fmt::Display for EncryptError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            EncryptError::Age(e) => write!(f, "{}", e),
             EncryptError::BrokenPipe { is_stdout, source } => {
                 if *is_stdout {
                     writeln!(
@@ -89,6 +93,18 @@ impl fmt::Display for EncryptError {
             ),
             EncryptError::Io(e) => write!(f, "{}", e),
             EncryptError::Minreq(e) => write!(f, "{}", e),
+            EncryptError::MissingPlugin(name) => {
+                writeln!(
+                    f,
+                    "{}",
+                    fl!(
+                        crate::LANGUAGE_LOADER,
+                        "err-missing-plugin",
+                        name = name.as_str()
+                    )
+                )?;
+                wfl!(f, "rec-missing-plugin")
+            }
             EncryptError::MissingRecipients => {
                 wlnfl!(f, "err-enc-missing-recipients")?;
                 wfl!(f, "rec-enc-missing-recipients")
