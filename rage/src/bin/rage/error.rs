@@ -135,6 +135,7 @@ pub(crate) enum DecryptError {
     IdentityNotFound(String),
     Io(io::Error),
     MissingIdentities(String),
+    MissingPlugin(String),
     PassphraseFlag,
     PassphraseTimedOut,
     #[cfg(not(unix))]
@@ -193,6 +194,18 @@ impl fmt::Display for DecryptError {
                 wlnfl!(f, "rec-dec-missing-identities-1")?;
                 wlnfl!(f, "rec-dec-missing-identities-2")?;
                 write!(f, "    {}", default_filename)
+            }
+            DecryptError::MissingPlugin(name) => {
+                writeln!(
+                    f,
+                    "{}",
+                    fl!(
+                        crate::LANGUAGE_LOADER,
+                        "err-missing-plugin",
+                        name = name.as_str()
+                    )
+                )?;
+                wfl!(f, "rec-missing-plugin")
             }
             DecryptError::PassphraseFlag => {
                 wlnfl!(f, "err-dec-passphrase-flag")?;

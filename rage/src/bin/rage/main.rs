@@ -418,6 +418,7 @@ fn decrypt(opts: AgeOptions) -> Result<(), error::DecryptError> {
                     error::DecryptError::MissingIdentities(default_filename.to_string())
                 },
                 error::DecryptError::IdentityNotFound,
+                error::DecryptError::MissingPlugin,
                 #[cfg(feature = "ssh")]
                 error::DecryptError::UnsupportedKey,
             )?;

@@ -57,6 +57,7 @@ enum Error {
     MissingFilename,
     MissingIdentities(String),
     MissingMountpoint,
+    MissingPlugin(String),
     MissingType,
     UnknownType(String),
     UnsupportedKey(String, age::ssh::UnsupportedKey),
@@ -112,6 +113,14 @@ impl fmt::Debug for Error {
                 write!(f, "    {}", default_filename)
             }
             Error::MissingMountpoint => wfl!(f, "err-mnt-missing-mountpoint"),
+            Error::MissingPlugin(name) => {
+                writeln!(
+                    f,
+                    "{}",
+                    i18n_embed_fl::fl!(LANGUAGE_LOADER, "err-missing-plugin", name = name.as_str())
+                )?;
+                wfl!(f, "rec-missing-plugin")
+            }
             Error::MissingType => wfl!(f, "err-mnt-missing-types"),
             Error::UnknownType(t) => write!(
                 f,
@@ -263,6 +272,7 @@ fn main() -> Result<(), Error> {
                 opts.identity,
                 |default_filename| Error::MissingIdentities(default_filename.to_string()),
                 |filename| Error::IdentityNotFound(filename),
+                Error::MissingPlugin,
                 Error::UnsupportedKey,
             )?;
 
